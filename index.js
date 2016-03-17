@@ -1,5 +1,5 @@
 var xhrObject = require('./lib/xhr-object.js');
-var Promise = require('rsvp').Promise;
+var Promise = require('promise');
 
 var buildParamsAsQueryString = function (params) {
   var queryString = [];
