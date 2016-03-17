@@ -200,7 +200,8 @@ module.exports = {
     options.method = 'GET';
 
     if (typeof url === 'string') {
-      options.url = this.base + url;
+      options.base = options.base || this.base || '';
+      options.url = options.base + url;
     }
 
     if (options.jsonContent !== false) {
@@ -215,7 +216,8 @@ module.exports = {
     options.headers = options.headers || {};
 
     if (typeof url === 'string') {
-      options.url = this.base + url;
+      options.base = options.base || this.base || '';
+      options.url = options.base + url;
     }
 
     options.method = 'POST';
@@ -232,7 +234,8 @@ module.exports = {
     options.headers = options.headers || {};
 
     if (typeof url === 'string') {
-      options.url = this.base + url;
+      options.base = options.base || this.base || '';
+      options.url = options.base + url;
     }
 
     if (options.jsonContent !== false && 'data' in options) {
@@ -248,7 +251,8 @@ module.exports = {
     options.headers = options.headers || {};
 
     if (typeof url === 'string') {
-      options.url = this.base + url;
+      options.base = options.base || this.base || '';
+      options.url = options.base + url;
     }
 
     options.method = options.method || 'POST';
