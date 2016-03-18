@@ -16,8 +16,8 @@ function parseHeaders(headerStrings) {
   const headers = {};
   const regexp = /^([^:]+): (.*)/;
 
-  for (const i of headerStrings) {
-    const match = headerStrings[i].match(regexp);
+  for (const headerString of headerStrings) {
+    const match = headerString.match(regexp);
     if (match) {
       headers[match[1].toLowerCase()] = match[2];
     }
@@ -29,7 +29,8 @@ function parseHeaders(headerStrings) {
 function sendRequest(options) {
   const xhr = new XMLHttpRequest();
   let url = options.url;
-  const { headers, method, responseType } = options;
+  const { headers, method } = options;
+  let { responseType } = options;
   xhr.open(method || 'GET', url, true, options.username, options.password);
 
   if (method === 'GET') {
@@ -47,6 +48,7 @@ function sendRequest(options) {
       }
       body = JSON.stringify(options.json);
     }
+    responseType = responseType || 'json';
   }
 
   if (headers) {
@@ -81,20 +83,14 @@ function sendRequest(options) {
         responseBody = xhr.responseText || xhr.responseXML;
       }
 
-      if (xhr.responseType === 'json') {
-        try {
-          responseBody = JSON.parse(responseBody);
-        } catch (e) {}  // eslint-disable-line no-empty
-      }
-
       let responseHeaders = xhr.getAllResponseHeaders();
       if (headers !== null) {
-        responseHeaders = parseHeaders(headers.split('\n'));
+        responseHeaders = parseHeaders(responseHeaders.split('\n'));
       }
       const response = {
         body: responseBody,
         headers: responseHeaders,
-        method: xhr.method,
+        method,
         statusCode: xhr.status,
         url,
         xhr
