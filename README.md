@@ -24,56 +24,59 @@ xhr.send(url, options)
 ## Examples
 
 1. Sending a GET request
-```javascript
-  xhr.get('/test-url', {
-    data: {
-      param: 'value'
-    },
-    headers: {
-      'Header-name': 'Header value'
-    },
-    responseType: 'json'
-  })
-  .then(function (response) {
-    console.log(`Success! The response JSON object: ${response.body}`);
-  })
-  .catch(function(response) {
-    console.log(`Error! Response Status Code: ${response.statusCode}`)
-  });
-```
+
+  ```javascript
+    xhr.get('/test-url', {
+      data: {
+        param: 'value'
+      },
+      headers: {
+        'Header-name': 'Header value'
+      },
+      responseType: 'json'
+    })
+    .then(function (response) {
+      console.log(`Success! The response JSON object: ${response.body}`);
+    })
+    .catch(function(response) {
+      console.log(`Error! Response Status Code: ${response.statusCode}`)
+    });
+  ```
 2. Sending a POST request with JSON
-```javascript
-  xhr.post('/test-url', {
-    json: {
-      param: 'value'
-    },
-    headers: {
-      'Header-name': 'Header value'
-    },
-    responseType: 'json'
-  })
-  .then(function (response) {
-    console.log(`Success! The response JSON object: ${response.body}`);
-  })
-  .catch(function(response) {
-    console.log(`Error! Response Status Code: ${response.statusCode}`)
-  });
-```
+
+  ```javascript
+    xhr.post('/test-url', {
+      json: {
+        param: 'value'
+      },
+      headers: {
+        'Header-name': 'Header value'
+      },
+      responseType: 'json'
+    })
+    .then(function (response) {
+      console.log(`Success! The response JSON object: ${response.body}`);
+    })
+    .catch(function(response) {
+      console.log(`Error! Response Status Code: ${response.statusCode}`)
+    });
+  ```
 3. Sending a request with any method
-```javascript
-  xhr.send('/test-url', {
-    method: 'PUT',
-    json: {
-      param: 'value'
-    },
-    headers: {
-      'Header-name': 'Header value'
-    }
-  })
-  .then(function (response) {
-    console.log(`Success! The response JSON object: ${response.body}`);
-  })
-  .catch(function(response) {
-    console.log(`Error! Response Status Code: ${response.statusCode}`)
-  });
-```
+
+  ```javascript
+    xhr.send('/test-url', {
+      method: 'PUT',
+      json: {
+        param: 'value'
+      },
+      headers: {
+        'Header-name': 'Header value'
+      }
+    })
+    .then(function (response) {
+      console.log(`Success! The response JSON object: ${response.body}`);
+    })
+    .catch(function(response) {
+      console.log(`Error! Response Status Code: ${response.statusCode}`)
+    });
+  ```
