@@ -113,25 +113,24 @@ function sendRequest(options) {
 }
 
 module.exports = {
-  base: null,
-  get: (url, options = {}) => {
+  get: function get(url, options = {}) {
     options.headers = options.headers || {};
 
     options.method = 'GET';
 
     if (typeof url === 'string') {
-      options.base = options.base || this.base || '';
+      options.base = options.base || '';
       options.url = options.base + url;
     }
 
     return sendRequest(options);
   },
 
-  post: (url, options = {}) => {
+  post: function post(url, options = {}) {
     options.headers = options.headers || {};
 
     if (typeof url === 'string') {
-      options.base = options.base || this.base || '';
+      options.base = options.base || '';
       options.url = options.base + url;
     }
 
@@ -140,22 +139,22 @@ module.exports = {
     return sendRequest(options);
   },
 
-  send: (url, options = {}) => {
+  send: function send(url, options = {}) {
     options.headers = options.headers || {};
 
     if (typeof url === 'string') {
-      options.base = options.base || this.base || '';
+      options.base = options.base || '';
       options.url = options.base + url;
     }
 
     return sendRequest(options);
   },
 
-  sendFormData: (url, options = {}) => {
+  sendFormData: function sendFormData(url, options = {}) {
     options.headers = options.headers || {};
 
     if (typeof url === 'string') {
-      options.base = options.base || this.base || '';
+      options.base = options.base || '';
       options.url = options.base + url;
     }
 
