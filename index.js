@@ -30,6 +30,7 @@ function sendRequest(options) {
   const xhr = new XMLHttpRequest();
   let url = options.url;
   const { headers, method, responseType } = options;
+  xhr.open(method || 'GET', url, true, options.username, options.password);
 
   if (method === 'GET') {
     url += buildParamsAsQueryString(options.data);
@@ -107,7 +108,6 @@ function sendRequest(options) {
 
     xhr.onerror = reject;
 
-    xhr.open(method || 'GET', url, true, options.username, options.password);
     xhr.send(body);
   });
 }
