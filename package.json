@@ -1,14 +1,14 @@
 {
-  "name": "promised-xhr",
-  "version": "1.2.0",
-  "description": "Promised XHR for browsers.",
+  "name": "xhr-promise-redux",
+  "version": "1.0.0",
+  "description": "XMLHttpRequest implementation wrapped in a promise.js Promise object",
   "main": "index.js",
   "dependencies": {
     "promise": "^7.1.1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/frikille/promised-xhr"
+    "url": "https://github.com/cbargren/xhr-promise-redux"
   },
   "keywords": [
     "promise",
@@ -16,12 +16,13 @@
     "browserify"
   ],
   "author": {
-    "name": "Peter Balazs",
-    "email": "peter.balazs@flowy.co.uk"
+    "name": "Chris Bargren",
+    "email": "cbargren@gmail.com"
   },
+  "contributors": [],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/frikille/promised-xhr/issues"
+    "url": "https://github.com/cbargren/xhr-promise-redux/issues"
   },
   "browser": {
     "json": false

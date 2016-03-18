@@ -1,65 +1,69 @@
-# Promised XHR
+Originally forked from [frikille/promised-xhr](https://github.com/frikille/promised-xhr)
 
-A small client-side XHR abstraction with promises.
+# XHR Promise
+
+This module wraps XMLHttpRequest with in promise object. The promise implementation is [Promises/A+](https://promisesaplus.com/) compliant and is provided by the [promise.js](https://www.npmjs.com/package/promise) Promise library.
+
+## Installation
+
+Install via [npm](https://www.npmjs.com/package/xhr-promise-redux) ![NPM version](https://badge.fury.io/js/xhr-promise-redux.svg)
+
+```bash
+$ npm install xhr-promise-redux
+```
 
 ## API
 ```javascript
-XHR.get(url, options)
-XHR.post(url, options)
-XHR.send(url, options)
+var xhr = require('xhr-promise-redux');
+
+xhr.get(url, options)
+xhr.post(url, options)
+xhr.send(url, options)
 ```
 
 ## Examples
 
 1. Sending a GET request
 ```javascript
-  var XHR = require('promised-xhr');
-
-  XHR.get('/test-url', {
+  xhr.get('/test-url', {
     data: {
       param: 'value'
     },
     headers: {
       'Header-name': 'Header value'
-    }
+    },
+    responseType: 'json'
   })
   .then(function (response) {
-    console.log('Success handler');
-    console.log('The response JSON obejct', response.body);
+    console.log(`Success! The response JSON object: ${response.body}`);
   })
   .catch(function(response) {
-    console.log('Error handler')
+    console.log(`Error! Response Status Code: ${response.statusCode}`)
   });
 ```
-
-2. Sending a POST request
+2. Sending a POST request with JSON
 ```javascript
-  var XHR = require('promised-xhr');
-
-  XHR.post('/test-url', {
-    data: {
+  xhr.post('/test-url', {
+    json: {
       param: 'value'
     },
     headers: {
       'Header-name': 'Header value'
-    }
+    },
+    responseType: 'json'
   })
   .then(function (response) {
-    console.log('Success handler');
-    console.log('The response JSON obejct', response.body);
+    console.log(`Success! The response JSON object: ${response.body}`);
   })
   .catch(function(response) {
-    console.log('Error handler')
+    console.log(`Error! Response Status Code: ${response.statusCode}`)
   });
 ```
-
 3. Sending a request with any method
 ```javascript
-  var XHR = require('promised-xhr');
-
-  XHR.send('/test-url', {
+  xhr.send('/test-url', {
     method: 'PUT',
-    data: {
+    json: {
       param: 'value'
     },
     headers: {
@@ -67,10 +71,9 @@ XHR.send(url, options)
     }
   })
   .then(function (response) {
-    console.log('Success handler');
-    console.log('The response JSON obejct', response.body);
+    console.log(`Success! The response JSON object: ${response.body}`);
   })
   .catch(function(response) {
-    console.log('Error handler')
+    console.log(`Error! Response Status Code: ${response.statusCode}`)
   });
 ```
