@@ -30,7 +30,7 @@ function parseHeaders(headerStrings) {
 function sendRequest(options) {
   const xhr = xhrObject();
   let url = options.url;
-  const { headers, method } = options;
+  const { headers, method, responseType } = options;
 
   if (method === 'GET') {
     url += buildParamsAsQueryString(options.data);
@@ -66,12 +66,34 @@ function sendRequest(options) {
     };
   }
 
+  if (responseType) {
+    xhr.responseType = responseType;
+  }
+
   return new Promise((resolve, reject) => {
     xhr.onreadystatechange = () => {
       if (xhr.readyState !== 4) return;
 
+      let responseBody = null;
+      if (xhr.response) {
+        responseBody = xhr.response;
+      } else if (xhr.responseType === 'text' || !xhr.responseType) {
+        responseBody = xhr.responseText || xhr.responseXML;
+      }
+
+      if (xhr.responseType === 'json') {
+        try {
+          responseBody = JSON.parse(responseBody);
+        } catch (e) {}  // eslint-disable-line no-empty
+      }
+
+      let responseHeaders = xhr.getAllResponseHeaders();
+      if (headers !== null) {
+        responseHeaders = parseHeaders(headers.split('\n'));
+      }
       const response = {
-        headers: parseHeaders(xhr.getAllResponseHeaders().split('\n')),
+        body: responseBody,
+        headers: responseHeaders,
         method: xhr.method,
         statusCode: xhr.status,
         url,
