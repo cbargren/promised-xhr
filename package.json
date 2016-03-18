@@ -1,6 +1,6 @@
 {
   "name": "xhr-promise-redux",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "XMLHttpRequest implementation wrapped in a promise.js Promise object",
   "main": "dist/index.js",
   "scripts": {
