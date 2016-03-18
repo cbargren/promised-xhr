@@ -99,7 +99,7 @@ function sendRequest(options) {
         url,
         xhr
       };
-      if (xhr.status !== 0) {
+      if (xhr.status >= 100 && xhr.status < 400) {
         resolve(response);
       } else {
         reject(response);
