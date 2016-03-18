@@ -1,4 +1,3 @@
-const xhrObject = require('./lib/xhr-object.js');
 const Promise = require('promise');
 
 function buildParamsAsQueryString(params) {
@@ -28,7 +27,7 @@ function parseHeaders(headerStrings) {
 }
 
 function sendRequest(options) {
-  const xhr = xhrObject();
+  const xhr = new XMLHttpRequest();
   let url = options.url;
   const { headers, method, responseType } = options;
 
