@@ -1,200 +1,99 @@
-var xhrObject = require('./lib/xhr-object.js');
-var Promise = require('promise');
+const xhrObject = require('./lib/xhr-object.js');
+const Promise = require('promise');
 
-var buildParamsAsQueryString = function (params) {
-  var queryString = [];
+function buildParamsAsQueryString(params) {
+  const queryString = [];
 
-  for (var p in params) {
+  for (const p in params) {
     if (params.hasOwnProperty(p)) {
-      queryString.push(p + '=' + params[p]);
+      queryString.push(`${p}=${params[p]}`);
     }
   }
 
-  return queryString.length > 0 ? '?' + queryString.join('&') : '';
-};
+  return queryString.length > 0 ? `?${queryString.join('&')}` : '';
+}
 
-var parseHeaders = function (headerStrings) {
-  var headers = {},
-    match,
-    regexp = /^([^:]+): (.*)/;
+function parseHeaders(headerStrings) {
+  const headers = {};
+  const regexp = /^([^:]+): (.*)/;
 
-  for (var i = 0, len = headerStrings.length; i < len; i++) {
-    match = headerStrings[i].match(regexp);
+  for (const i of headerStrings) {
+    const match = headerStrings[i].match(regexp);
     if (match) {
       headers[match[1].toLowerCase()] = match[2];
     }
   }
 
   return headers;
-};
+}
 
-var sendRequest = function (options) {
+function sendRequest(options) {
+  const xhr = xhrObject();
+  let url = options.url;
+  const { headers, method } = options;
 
-  var client = xhrObject();
-  var url = options.url;
-
-  if (options.method == 'GET') {
+  if (method === 'GET') {
     url += buildParamsAsQueryString(options.data);
   }
 
-  client.open(options.method || 'GET', url, true);
-
-  if (options.credentials) {
-    client.withCredentials = true;
+  let body = options.body || options.data || null;
+  if ('json' in options) {
+    if (!headers.accept && !headers.Accept) {
+      headers.Accept = 'application/json';
+    }
+    if (method !== 'GET' && method !== 'HEAD') {
+      if (!headers['content-type'] && !headers['Content-Type']) {
+        headers['Content-Type'] = 'application/json';
+      }
+      body = JSON.stringify(options.json);
+    }
   }
 
-  if (options.headers) {
-    for (var key in options.headers) {
-      if (options.headers.hasOwnProperty(key)) {
-        client.setRequestHeader(key, options.headers[key]);
+  if (headers) {
+    for (const key in headers) {
+      if (headers.hasOwnProperty(key)) {
+        xhr.setRequestHeader(key, headers[key]);
       }
     }
   }
 
-  if (options.fileUpload) {
-    return new Promise(function (resolve, reject){
-      client.onreadystatechange = function () {
-        if (client.readyState !== 4) return;
+  if (options.onUploadProgress) {
+    xhr.upload.onprogress = function onUploadProgress(e) {
+      if (e.lengthComputable) {
+        const percentLoaded = Math.round((e.loaded / e.total) * 100);
+        options.onUploadProgress(percentLoaded);
+      }
+    };
+  }
 
-        if (client.status < 400) {
-          setResponseObject({}, resolve);
-        } else {
-          setResponseObject(new Error('The server encountered an error with a status code ' + client.status), reject);
-        }
+  return new Promise((resolve, reject) => {
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState !== 4) return;
 
-        function setResponseObject (response, callback) {
-          response.status = client.status;
-          response.headers = parseHeaders(client.getAllResponseHeaders().split('\n'));
-          response.body = client.responseText;
-
-          callback(response);
-        }
+      const response = {
+        headers: parseHeaders(xhr.getAllResponseHeaders().split('\n')),
+        method: xhr.method,
+        statusCode: xhr.status,
+        url,
+        xhr
       };
-
-      if (options.onUploadProgress) {
-        client.upload.onprogress = function(e) {
-          var percentLoaded;
-          if (e.lengthComputable) {
-            percentLoaded = Math.round((e.loaded / e.total) * 100);
-            return options.onUploadProgress(percentLoaded, percentLoaded === 100 ? 'Finalizing.' : 'Uploading.');
-          }
-        };
-      }
-
-      client.onerror = reject;
-
-      client.send(options.file);
-    });
-  }
-
-  return new Promise(function (resolve, reject){
-    client.onreadystatechange = function () {
-      if (client.readyState !== 4) return;
-
-      if (client.status < 400) {
-        setResponseObject({}, resolve);
+      if (xhr.status !== 0) {
+        resolve(response);
       } else {
-        setResponseObject(new Error('The server encountered an error with a status code ' + client.status), reject);
-      }
-
-      function setResponseObject (response, callback) {
-        response.status = client.status;
-        response.headers = parseHeaders(client.getAllResponseHeaders().split('\n'));
-        response.body = client.responseText;
-
-        callback(response);
+        reject(response);
       }
     };
 
-    client.onerror = reject;
+    xhr.onerror = reject;
 
-    if (options.method != 'GET') {
-      client.setRequestHeader('Content-Type', 'application/json');
-      client.send(JSON.stringify(options.data));
-    } else {
-      client.send();
-    }
+    xhr.open(method || 'GET', url, true, options.username, options.password);
+    xhr.send(body);
   });
-};
-
-var sendFormData = function (options) {
-  var client = xhrObject();
-  var url = options.url;
-
-  client.open(options.method, url, true);
-
-  if (options.credentials) {
-    client.withCredentials = true;
-  }
-
-  if (options.headers) {
-    for (var key in options.headers) {
-      if (options.headers.hasOwnProperty(key)) {
-        client.setRequestHeader(key, options.headers[key]);
-      }
-    }
-  }
-
-  return new Promise(function (resolve, reject) {
-    client.onreadystatechange = function () {
-      if (client.readyState !== 4) return;
-
-      if (client.status < 400) {
-        setResponseObject({}, resolve);
-      } else {
-        setResponseObject(new Error('The server encountered an error with a status code ' + client.status), reject);
-      }
-
-      function setResponseObject (response, callback) {
-        response.status = client.status;
-        response.headers = parseHeaders(client.getAllResponseHeaders().split('\n'));
-        response.body = client.responseText;
-
-        callback(response);
-      }
-    };
-
-    client.onerror = reject;
-
-    var formData;
-
-    if (options.data) {
-      formData = new FormData();
-
-      for (var key in options.data) {
-        if (options.data.hasOwnProperty(key)) {
-          formData.append(key, options.data[key]);
-        }
-      }
-    } else {
-      formData = options.formData;
-    }
-
-    client.send(formData);
-
-  });
-};
-
-var parseJson = function (response) {
-  response.body = JSON.parse(response.body);
-
-  return response;
-};
-
-var parseError = function (response) {
-  if (response.body) {
-    try {
-      response = parseJson(response);
-    } catch (e) {}
-  }
-
-  throw response;
-};
+}
 
 module.exports = {
   base: null,
-  get : function (url, options) {
-    options = options || {};
+  get: (url, options = {}) => {
     options.headers = options.headers || {};
 
     options.method = 'GET';
@@ -204,15 +103,10 @@ module.exports = {
       options.url = options.base + url;
     }
 
-    if (options.jsonContent !== false) {
-      return sendRequest(options).then(parseJson, parseError);
-    } else {
-      return sendRequest(options);
-    }
+    return sendRequest(options);
   },
 
-  post : function (url, options) {
-    options = options || {};
+  post: (url, options = {}) => {
     options.headers = options.headers || {};
 
     if (typeof url === 'string') {
@@ -222,15 +116,10 @@ module.exports = {
 
     options.method = 'POST';
 
-    if (options.jsonContent !== false && 'data' in options) {
-      return sendRequest(options).then(parseJson, parseError);
-    } else {
-      return sendRequest(options);
-    }
+    return sendRequest(options);
   },
 
-  send : function (url, options) {
-    options = options || {};
+  send: (url, options = {}) => {
     options.headers = options.headers || {};
 
     if (typeof url === 'string') {
@@ -238,16 +127,10 @@ module.exports = {
       options.url = options.base + url;
     }
 
-    if (options.jsonContent !== false && 'data' in options) {
-      return sendRequest(options).then(parseJson, parseError);
-    } else {
-      return sendRequest(options);
-    }
+    return sendRequest(options);
   },
 
-  sendFormData: function (url, options) {
-    options = options || {};
-
+  sendFormData: (url, options = {}) => {
     options.headers = options.headers || {};
 
     if (typeof url === 'string') {
@@ -257,10 +140,18 @@ module.exports = {
 
     options.method = options.method || 'POST';
 
-    if (options.jsonContent !== false && 'data' in options) {
-      return sendFormData(options).then(parseJson, parseError);
-    } else {
-      return sendFormData(options);
+    if (typeof options.data === 'object') {
+      const formData = new FormData();
+
+      for (const key in options.data) {
+        if (options.data.hasOwnProperty(key)) {
+          formData.append(key, options.data[key]);
+        }
+      }
+
+      options.data = formData;
     }
+
+    return sendRequest(options);
   }
 };
