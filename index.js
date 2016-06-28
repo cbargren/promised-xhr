@@ -105,6 +105,14 @@ function sendRequest(options) {
     xhr.onerror = reject;
 
     xhr.send(body);
+  }).then((response) => {
+    // this is handled in chrome/ff, but IE is bad and this happens
+    const typeIsJSON = response.headers['content-type'].includes('application/json');
+    const bodyIsString = typeof response.body === 'string';
+    if (typeIsJSON && bodyIsString) {
+      response.body = JSON.parse(response.body);
+    }
+    return response;
   });
 }
 
