@@ -68,6 +68,10 @@ function sendRequest(options) {
     };
   }
 
+  if (options.timeout) {
+    xhr.timeout = options.timeout;
+  }
+
   if (responseType) {
     xhr.responseType = responseType;
   }
